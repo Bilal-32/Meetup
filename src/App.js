@@ -1,164 +1,157 @@
-import React from 'react';
-
+import React, { Component } from "react";
+import "./App.css";
+import EventList from "./EventList";
+import EventGenre from "./EventGenre";
+import CitySearch from "./CitySearch";
+import NumberOfEvents from "./NumberOfEvents";
+import { extractLocations, getEvents, checkToken, getAccessToken } from "./api";
+import { OffLineAlert } from "./Alert";
+import "./nprogress.css";
+import WelcomeScreen from "./WelcomeScreen";
 import {
-    BarChart, Bar, PieChart, Pie, XAxis, YAxis, Tooltip, ResponsiveContainer
-} from 'recharts';
+  ScatterChart,
+  Scatter,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
 
-import EventList from './EventList';
-import CitySearch from './CitySearch';
-import NumberOfEvents from './NumberOfEvents';
-import WelcomeScreen from './WelcomeScreen';
-import { OfflineAlert } from './Alert';
+class App extends Component {
+  state = {
+    events: [],
+    locations: [],
+    numberOfEvents: 32,
+    locationSelected: "all",
+    showWelcomeScreen: undefined,
+  };
 
-import { extractLocations, getEvents, checkToken, getAccessToken } from './api';
-
-import './App.css';
-import './nprogress.css';
-
-class App extends React.Component {
-    updateEvents = (location, eventCount) => {
-        if (eventCount === undefined) { eventCount = this.state.numberOfEvents }
-        if (location === undefined) { location = this.state.selectedLocation }
-
-        getEvents().then((events) => {
-            let locationEvents = (location === 'all') ? events
-                : events.filter((event) => event.location === location);
-
-            this.setState({
-                events: locationEvents.slice(0, eventCount),
-                numberOfEvents: eventCount,
-                selectedLocation: location
-            });
-        });
-    }
-
-    getData = () => {
-        const { locations, events } = this.state;
-        const data = locations.map((location) => {
-            const number = events.filter((event) => event.location === location).length;
-            const city = location.split(', ').shift();
-            return { city, number };
-        });
-        return data;
-    };
-
-    getBarData = () => {
-        const { locations, events } = this.state;
-        const data = locations.map((location) => {
-            const number = events.filter((event) => event.location === location).length;
-            const city = location.split(', ').shift();
-            return { city, number };
-        });
-        return data;
-    }
-
-    getPieData = () => {
-        const { events } = this.state;
-        const genres = ['React', 'JavaScript', 'Node', 'jQuery', 'AngularJS'];
-        const data = genres.map((genre) => {
-            const value = events.filter((event) => event.summary.includes(genre)).length;
-            return { "name": genre, value };
-        });
-        return data.filter(item => item.value > 0); // filter out genres not in current data set
-    };
-
-    constructor() {
-        super();
-        this.state = {
-            events: [],
-            locations: [],
-            numberOfEvents: 32,
-            selectedLocation: 'all',
-            showWelcomeScreen: undefined,
-            offlineText: ''
+  async componentDidMount() {
+    this.mounted = true;
+    const accessToken = localStorage.getItem("access_token");
+    const isTokenValid = (await checkToken(accessToken)).error ? false : true;
+    const searchParams = new URLSearchParams(window.location.search);
+    const code = searchParams.get("code");
+    this.setState({ showWelcomeScreen: !(code || isTokenValid) });
+    if ((code || isTokenValid) && this.mounted) {
+      getEvents().then((events) => {
+        if (this.mounted) {
+          let sliceNumber = this.state.numberOfEvents;
+          this.setState({
+            locations: extractLocations(events),
+            events: events.slice(0, sliceNumber),
+          });
         }
+      });
     }
+  }
 
-    render() {
-        const { events, locations, numberOfEvents, offlineText } = this.state;
+  componentWillUnmount() {
+    this.mounted = false;
+  }
 
-        if (this.state.showWelcomeScreen === undefined) return <div className="App" />
-
-        return (
-            <div className="App">
-                <div className="content-container">
-                    <OfflineAlert text={offlineText} />
-                    <div className="app-header">
-                        <h1 className="app-title">Welcome to Meetup</h1>
-                        <h2 className="app-subtitle">Enter location below: </h2>
-                    </div>
-                    <CitySearch updateEvents={this.updateEvents} locations={locations} />
-                    <NumberOfEvents numberOfEvents={numberOfEvents} updateEvents={this.updateEvents} />
-                    <div className="visualized-data">
-                        <div className="pie-chart">
-                            <h4>Genre distribution</h4>
-                            <ResponsiveContainer height={400} width="99%">
-                                <PieChart>
-                                    <Pie data={this.getPieData()} dataKey="value" cx="50%" cy="50%"
-                                        outerRadius="50%" labelLine={false} fill="#283618"
-                                        label={({ name }) => `${name}`} />
-                                </PieChart>
-                            </ResponsiveContainer>
-                        </div>
-                        <div className="bar-chart">
-                            <h4>Event distribution by city</h4>
-                            <ResponsiveContainer height={400} width="99%">
-                                <BarChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }} data={this.getBarData()} layout="vertical" barCategoryGap={3}>
-                                    <XAxis type="number" />
-                                    <YAxis type="category" name="city" dataKey="city" tick={{ fontSize: '13px', fill: "#283618" }} width={100} />
-                                    <Tooltip />
-                                    <Bar dataKey="number" fill="#283618" />
-                                </BarChart>
-                            </ResponsiveContainer>
-                        </div>
-                    </div>
-                    <WelcomeScreen showWelcomeScreen={this.state.showWelcomeScreen} getAccessToken={() => { getAccessToken() }} />
-                    <EventList events={events} />
-                </div>
-
-            </div >
-        );
+  updateEvents = (location, maxNumberEvents) => {
+    if (maxNumberEvents === undefined) {
+      maxNumberEvents = this.state.numberOfEvents;
+    } else this.setState({ numberOfEvents: maxNumberEvents });
+    if (location === undefined) {
+      location = this.state.locationSelected;
     }
+    getEvents().then((events) => {
+      let locationEvents =
+        location === "all"
+          ? events
+          : events.filter((event) => event.location === location);
+      this.setState({
+        events: locationEvents.slice(0, maxNumberEvents),
+        numberOfEvents: maxNumberEvents,
+        locationSelected: location,
+      });
+    });
+  };
 
-    //
+  updateNumberEvents = (numberOfEvents) => {
+    this.setState({
+      numberOfEvents,
+    });
+    this.updateEvents(undefined, numberOfEvents);
+  };
 
-    async componentDidMount() {
-        this.mounted = true;
-        const accessToken = localStorage.getItem('access_token');
-        let isTokenValid;
-        const isLocalTesting = window.location.href.startsWith('http://localhost');
-        if (isLocalTesting) { isTokenValid = true }
-        if (isLocalTesting || (accessToken && !navigator.onLine)) {
-            console.log('not online; token valid by default');
-            isTokenValid = true;
-        } else {
-            isTokenValid = (await checkToken(accessToken)).error ? false : true;
-        }
-        const searchParams = new URLSearchParams(window.location.search);
-        const code = searchParams.get("code");
-        this.setState({ showWelcomeScreen: !(code || isTokenValid) });
-        if ((code || isTokenValid) && this.mounted) {
-            getEvents().then((events) => {
-                if (this.mounted) {
-                    this.setState({ events, locations: extractLocations(events) });
-                }
-            });
-        }
+  getData = () => {
+    const { locations, events } = this.state;
+    const data = locations.map((location) => {
+      const number = events.filter(
+        (event) => event.location === location
+      ).length;
+      const city = location.split(", ").shift();
+      return { city, number };
+    });
+    return data;
+  };
 
-        if (!navigator.onLine) {
-            this.setState({
-                offlineText: "You're offline! Using data from your last visit...",
-            });
-        } else {
-            this.setState({
-                offlineText: '',
-            });
-        }
-    }
+  render() {
+    if (this.state.showWelcomeScreen === undefined)
+      return <div className="App" />;
+    return (
+      <div className="App">
+        <WelcomeScreen
+          showWelcomeScreen={this.state.showWelcomeScreen}
+          getAccessToken={() => {
+            getAccessToken();
+          }}
+        />
+        <div className="offlineAlert">
+          {!navigator.onLine && (
+            <OffLineAlert text={"You are currently offline!"} />
+          )}
+        </div>
 
-    componentWillUnmount() {
-        this.mounted = false;
-    }
+        <h1>Come and see what's going on</h1>
+
+        <CitySearch
+          locations={this.state.locations}
+          updateEvents={this.updateEvents}
+        />
+        <NumberOfEvents
+          updateEvents={this.updateEvents}
+          numberOfEvents={this.state.numberOfEvents}
+        />
+        <div className="data-vis-wrapper">
+          <div className="pie-wrapper">
+            <EventGenre events={this.state.events} />
+          </div>
+          <div className="scatter-wrapper">
+            <ResponsiveContainer>
+              <ScatterChart
+                width={400}
+                height={400}
+                margin={{
+                  top: 20,
+                  right: 20,
+                  bottom: 20,
+                  left: 20,
+                }}
+              >
+                <CartesianGrid />
+                <XAxis type="category" dataKey="city" name="City" />
+                <YAxis
+                  type="number"
+                  dataKey="number"
+                  name="Number of events"
+                  allowDecimals={false}
+                />
+
+                <Tooltip cursor={{ strokeDasharray: "3 3" }} />
+                <Scatter data={this.getData()} fill="#8884d8" />
+              </ScatterChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+        <EventList events={this.state.events} />
+      </div>
+    );
+  }
 }
 
 export default App;
