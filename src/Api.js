@@ -76,7 +76,7 @@ export const getEvents = async () => {
   NProgress.start();
   // console.log(myData);
 
-  if (window.location.href.startsWith("http://localhoster")) {
+  if (window.location.href.startsWith("http://localhost")) {
     NProgress.done();
     return myData.events;
   }
