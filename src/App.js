@@ -26,6 +26,7 @@ class App extends Component {
     numberOfEvents: 32,
     locationSelected: "all",
     showWelcomeScreen: undefined,
+    scatterData: null
   };
 
   async componentDidMount() {
@@ -85,11 +86,14 @@ class App extends Component {
     return this.setState({ events: this.state.eventsOriginal.slice(0, count) });
   };
 
-  getData = () => {
+  getData = (location) => {
+    if(location && location=='all'){
+      location = null;
+    }
     const { locations, events } = this.state;
     let data=null;
     try{
-      data = locations.map((location) => {
+      data = (location ? [location] : locations).map((location) => {
         const number = events.filter(
           (event) => event.location === location
         ).length;
@@ -155,7 +159,7 @@ class App extends Component {
                 />
 
                 <Tooltip cursor={{ strokeDasharray: "3 3" }} />
-                <Scatter data={this.getData()} fill="#8884d8" />
+                <Scatter data={this.getData(this.state.locationSelected)} fill="#8884d8" />
               </ScatterChart>
             </ResponsiveContainer>
           </div>

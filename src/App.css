@@ -240,7 +240,7 @@ input[type="number"] {
     flex-direction: row;
   }
   .data-vis-wrapper .recharts-responsive-container {
-    flex-basis: 50%;
+    flex-basis: 45%;
     /* max-width: 50%; */
     /* min-width: auto;  */
     /* margin: 0 auto; */
