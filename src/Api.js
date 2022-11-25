@@ -1,11 +1,10 @@
-import { mockData } from "./mock-data";
 import axios from "axios";
 import NProgress from "nprogress";
 import {AUTH_BASE_API} from "./Constants";
 import myData from './data.json';
 
 export const extractLocations = (events) => {
-  var extractLocations = events.map((event) => event.location);
+  var extractLocations = events?.map((event) => event.location);
   var locations = [...new Set(extractLocations)];
   return locations;
 };
@@ -75,9 +74,9 @@ const removeQuery = () => {
 
 export const getEvents = async () => {
   NProgress.start();
-  console.log(myData);
+  // console.log(myData);
 
-  if (window.location.href.startsWith("http://localhost")) {
+  if (window.location.href.startsWith("http://localhoster")) {
     NProgress.done();
     return myData.events;
   }
@@ -89,7 +88,7 @@ export const getEvents = async () => {
   }
 
   const token = await getAccessToken();
-  console.log(myData);
+  // console.log(myData);
   if (token) {
     removeQuery();
     const url =
@@ -97,13 +96,14 @@ export const getEvents = async () => {
       "/" +
       token;
     const result = await axios.get(url);
+    let data = myData; //result.data
 
     if (myData) {
-      var locations = extractLocations(myData.events);
-      localStorage.setItem("lastEvents", JSON.stringify(myData));
+      var locations = extractLocations(data.events);
+      localStorage.setItem("lastEvents", JSON.stringify(data.events));
       localStorage.setItem("locations", JSON.stringify(locations));
     }
     NProgress.done();
-    return myData;
+    return data.events;
   }
 };
