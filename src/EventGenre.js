@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { PieChart, Pie, ResponsiveContainer } from "recharts";
+import {PieChart, Pie, ResponsiveContainer, Tooltip} from "recharts";
 
 const EventGenre = ({ events }) => {
   const [data, setData] = useState([]);
@@ -35,10 +35,8 @@ const EventGenre = ({ events }) => {
           width={600}
           height={400}
           data={data}
-          cx={250}
-          cy={250}
           isAnimationActive={false}
-          labelLine={false}
+          labelLine={true}
           label={({ name, percent }) =>
             `${name} ${(percent * 100).toFixed(0)}%`
           }
@@ -46,6 +44,7 @@ const EventGenre = ({ events }) => {
           fill="#8884d8"
           dataKey="value"
         />
+        <Tooltip />
       </PieChart>
     </ResponsiveContainer>
   );
