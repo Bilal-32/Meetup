@@ -22,7 +22,7 @@ const getToken = async (code) => {
   try {
     const encodeCode = encodeURIComponent(code);
     const response = await fetch(
-      AUTH_BASE_API+"/dev/api/token" +
+      AUTH_BASE_API+"dev/api/token" +
         "/" +
         encodeCode
     );

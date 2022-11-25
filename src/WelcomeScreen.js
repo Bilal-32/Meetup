@@ -1,5 +1,6 @@
 import React from "react";
 import "./WelcomeScreen.css";
+import {PRIVACY_URL} from "./Constants";
 
 function WelcomeScreen(props) {
   return props.showWelcomeScreen ? (
@@ -31,7 +32,7 @@ o.svg"
       </div>
       <footer>
         <a
-          href="https://rswager83.github.io/meet_/privacy.html"
+          href={PRIVACY_URL}
           rel="nofollow noopener"
         >
           Privacy policy
