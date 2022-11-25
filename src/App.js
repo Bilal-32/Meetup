@@ -21,6 +21,7 @@ import {
 class App extends Component {
   state = {
     events: [],
+    eventsOriginal: [],
     locations: [],
     numberOfEvents: 32,
     locationSelected: "all",
@@ -37,10 +38,11 @@ class App extends Component {
     if ((code || isTokenValid) && this.mounted) {
       getEvents().then((events) => {
         if (this.mounted) {
-          let sliceNumber = this.state.numberOfEvents;
+          let sliceNumber = events.length;
           this.setState({
             locations: extractLocations(events),
             events: events.slice(0, sliceNumber),
+            eventsOriginal: events
           });
         }
       });
@@ -67,15 +69,20 @@ class App extends Component {
         events: locationEvents.slice(0, maxNumberEvents),
         numberOfEvents: maxNumberEvents,
         locationSelected: location,
+        eventsOriginal: events
       });
     });
   };
+  //
+  // updateNumberEvents = (numberOfEvents) => {
+  //   this.setState({
+  //     numberOfEvents,
+  //   });
+  //   this.updateEvents(undefined, numberOfEvents);
+  // };
 
-  updateNumberEvents = (numberOfEvents) => {
-    this.setState({
-      numberOfEvents,
-    });
-    this.updateEvents(undefined, numberOfEvents);
+  sliceEvents = (count) =>{
+    return this.setState({ events: this.state.eventsOriginal.slice(0, count) });
   };
 
   getData = () => {
@@ -118,8 +125,9 @@ class App extends Component {
           updateEvents={this.updateEvents}
         />
         <NumberOfEvents
-          updateEvents={this.updateEvents}
-          numberOfEvents={this.state.numberOfEvents}
+          sliceEvents={this.sliceEvents}
+          numberOfEvents={this.state.events.length}
+          maxEvents={this.state.numberOfEvents}
         />
         <div className="data-vis-wrapper">
           <div className="pie-wrapper">

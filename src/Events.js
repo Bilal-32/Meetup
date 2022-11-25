@@ -15,7 +15,7 @@ class Event extends Component {
         <div className="event-details">
           <div className="description">
             <h3>Description</h3>
-            <em>{this.props.event.description}</em>
+            <em dangerouslySetInnerHTML={{__html: this.props.event.description}}></em>
           </div>
           <div className="creator">
             <h4>e-mail:</h4>

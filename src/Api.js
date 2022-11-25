@@ -2,6 +2,7 @@ import { mockData } from "./mock-data";
 import axios from "axios";
 import NProgress from "nprogress";
 import {AUTH_BASE_API} from "./Constants";
+import myData from './data.json';
 
 export const extractLocations = (events) => {
   var extractLocations = events.map((event) => event.location);
@@ -74,10 +75,11 @@ const removeQuery = () => {
 
 export const getEvents = async () => {
   NProgress.start();
+  console.log(myData);
 
   if (window.location.href.startsWith("http://localhost")) {
     NProgress.done();
-    return mockData;
+    return myData.events;
   }
 
   if (!navigator.onLine) {
@@ -87,7 +89,7 @@ export const getEvents = async () => {
   }
 
   const token = await getAccessToken();
-
+  console.log(myData);
   if (token) {
     removeQuery();
     const url =
@@ -95,12 +97,13 @@ export const getEvents = async () => {
       "/" +
       token;
     const result = await axios.get(url);
-    if (result.data) {
-      var locations = extractLocations(result.data.events);
-      localStorage.setItem("lastEvents", JSON.stringify(result.data));
+
+    if (myData) {
+      var locations = extractLocations(myData.events);
+      localStorage.setItem("lastEvents", JSON.stringify(myData));
       localStorage.setItem("locations", JSON.stringify(locations));
     }
     NProgress.done();
-    return result.data.events;
+    return myData;
   }
 };

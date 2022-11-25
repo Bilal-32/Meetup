@@ -3,18 +3,25 @@ import { ErrorAlert } from "./Alert";
 
 class NumberOfEvents extends Component {
   state = {
-    numberOfEvents: 32,
+    numberOfEvents: this.props.maxEvents,
     errorText: "",
   };
 
   handleInputChanged = (event) => {
     const value = event.target.value;
-    if (value > 0 && value <= 32) {
+    if(!value){
+      this.props.sliceEvents(32);
+      return this.setState({ numberOfEvents: '', errorText: "" });
+    }
+
+    if (value > 0 && value <= this.props.maxEvents) {
+      this.props.sliceEvents(value);
       return this.setState({ numberOfEvents: value, errorText: "" });
     } else {
+      this.props.sliceEvents(this.props.maxEvents);
       return this.setState({
-        numberOfEvents: 32,
-        errorText: "Select number from 1 to 32",
+        numberOfEvents: this.props.maxEvents,
+        errorText: "Select number from 1 to "+this.props.maxEvents,
       });
     }
   };
@@ -26,6 +33,7 @@ class NumberOfEvents extends Component {
           type="number"
           id="default"
           className="default"
+          placeholder="Enter no of events"
           value={this.state.numberOfEvents}
           onChange={this.handleInputChanged}
         />

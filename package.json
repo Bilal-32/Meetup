@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "main": "src/index.js",
-  "homepage": "https://bilal-32.github.io/meet_",
+  "homepage": "http://localhost:3000/meet_",
   "dependencies": {
     "@testing-library/jest-dom": "^5.16.4",
     "@testing-library/react": "^13.3.0",
@@ -16,7 +16,7 @@
     "react-bootstrap": "^2.4.0",
     "react-dom": "^18.2.0",
     "react-scripts": "^5.0.1",
-    "recharts": "^2.1.13",
+    "recharts": "2.0.6",
     "web-vitals": "^2.1.4",
     "workbox-background-sync": "^6.5.3",
     "workbox-broadcast-update": "^6.5.3",
@@ -34,7 +34,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
+    "test": "react-scripts test  --transformIgnorePatterns \"node_modules/(?!your-module-name)/\"",
     "eject": "react-scripts eject",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d build"
