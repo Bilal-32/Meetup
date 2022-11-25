@@ -2,7 +2,8 @@
   "name": "meet_",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://rswager83.github.io/meet_",
+  "main": "src/index.js",
+  "homepage": "https://njoshdavi.github.io/meet-app",
   "dependencies": {
     "@testing-library/jest-dom": "^5.16.4",
     "@testing-library/react": "^13.3.0",

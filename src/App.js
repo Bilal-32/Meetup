@@ -1,10 +1,10 @@
 import React, { Component } from "react";
 import "./App.css";
-import EventList from "./EventList";
+import EventList from "./Eventlist";
 import EventGenre from "./EventGenre";
-import CitySearch from "./CitySearch";
+import CitySearch from "./Citysearch";
 import NumberOfEvents from "./NumberOfEvents";
-import { extractLocations, getEvents, checkToken, getAccessToken } from "./api";
+import { extractLocations, getEvents, checkToken, getAccessToken } from "./Api";
 import { OffLineAlert } from "./Alert";
 import "./nprogress.css";
 import WelcomeScreen from "./WelcomeScreen";

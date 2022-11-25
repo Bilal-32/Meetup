@@ -1,6 +1,7 @@
 import { mockData } from "./mock-data";
 import axios from "axios";
 import NProgress from "nprogress";
+import {AUTH_BASE_API} from "./Constants";
 
 export const extractLocations = (events) => {
   var extractLocations = events.map((event) => event.location);
@@ -21,7 +22,7 @@ const getToken = async (code) => {
   try {
     const encodeCode = encodeURIComponent(code);
     const response = await fetch(
-      "https://4lnd75qgye.execute-api.eu-central-1.amazonaws.com/dev/api/token" +
+      AUTH_BASE_API+"/dev/api/token" +
         "/" +
         encodeCode
     );
@@ -46,7 +47,7 @@ export const getAccessToken = async () => {
     const code = await searchParams.get("code");
     if (!code) {
       const results = await axios.get(
-        "https://4lnd75qgye.execute-api.eu-central-1.amazonaws.com/dev/api/get-auth-url"
+        AUTH_BASE_API+"dev/api/get-auth-url"
       );
       const { authUrl } = results.data;
       return (window.location.href = authUrl);
@@ -90,7 +91,7 @@ export const getEvents = async () => {
   if (token) {
     removeQuery();
     const url =
-      "https://4lnd75qgye.execute-api.eu-central-1.amazonaws.com/dev/api/get-events" +
+    AUTH_BASE_API+"dev/api/get-events" +
       "/" +
       token;
     const result = await axios.get(url);
