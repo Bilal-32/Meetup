@@ -236,6 +236,13 @@ input[type="number"] {
 }
 
 @media only screen and (min-width: 992px) {
+  .frecharts-wrapper{
+    margin-left: unset;
+  }
+  .vrecharts-wrapper{
+    margin-left: unset;
+  }
+
   .data-vis-wrapper {
     flex-direction: row;
   }
@@ -244,5 +251,14 @@ input[type="number"] {
     /* max-width: 50%; */
     /* min-width: auto;  */
     /* margin: 0 auto; */
+  }
+}
+
+@media only screen and (max-width: 992px) {
+  .frecharts-wrapper{
+    margin-left: 10%;
+  }
+  .vrecharts-wrapper{
+    margin-left: 22%;
   }
 }

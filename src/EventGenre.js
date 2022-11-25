@@ -28,7 +28,7 @@ const EventGenre = ({ events }) => {
   }, [events]);
 
   return (
-    <ResponsiveContainer  width={700}>
+    <ResponsiveContainer  width={700} className='frecharts-wrapper'>
       <PieChart width={400}  id="pie1">
         <Pie
           id="pie"

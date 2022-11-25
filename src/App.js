@@ -138,7 +138,7 @@ class App extends Component {
             <EventGenre events={this.state.events} />
           </div>
           <div className="scatter-wrapper">
-            <ResponsiveContainer>
+            <ResponsiveContainer className="vrecharts-wrapper">
               <ScatterChart
                 width={400}
                 height={400}
